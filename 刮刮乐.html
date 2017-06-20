@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>刮刮乐</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		#canvas{
+			position: absolute;
+			left: 50%;
+			margin-left: -250px;
+			border: 1px solid black;
+			background-size: 700px 500px;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="500" height="500"></canvas>
+	<script src="jquery-3.2.0.js"></script>
+	<script type="text/javascript">
+		function GetRandomNum (min,max){
+			var num = max - min;
+			var random = Math.random();
+			return (min + Math.round(num * random))
+		}
+		var X = null , Y = null;
+		var canvas = document.getElementById('canvas'),
+			w = canvas.clientWidth,
+            h = canvas.clientHeight,
+			arr = ['《风之谷》.jpg','《哈尔的移动城堡》2.jpg','《天空之城》5.jpg'];
+		var num = GetRandomNum(0,2)
+		canvas.style.backgroundImage = 'url(' + arr[num] + ')';
+		var ctx = canvas.getContext('2d');
+		ctx.beginPath();
+		ctx.fillStyle='#ccc';
+		ctx.fillRect(0, 0, w, h);
+		
+		$('#canvas').on('mousedown',function(e){
+			ctx.globalCompositeOperation = 'destination-out' ;
+			var X = e.clientX - $('#canvas').offset().left;
+			var Y = e.clientY ;
+			ctx.beginPath();
+			ctx.arc( X, Y, 35, Math.PI/180 * 0, Math.PI/180 * 360 ,0)
+			ctx.fill();
+			document.onmousemove = function(e){
+				X = e.clientX - $('#canvas').offset().left;
+				Y = e.clientY ;
+				ctx.beginPath();
+				ctx.arc( X, Y, 35, Math.PI/180 * 0, Math.PI/180 * 360 ,0)
+				ctx.fill();
+				imgdata()
+			}
+		})
+		document.onmouseup = function(e){
+			document.onmousemove = false;
+			console.log(2)
+		}
+		function imgdata(e){
+			var d = ctx.getImageData(0, 0, w, h),
+                c = 0;
+            for (var i = 0, len = d.data.length; i < len; i += 4) {
+                if(d.data[i+3] === 0) {
+                    c++;
+                }
+            }
+            if (c > w*h*0.8) {
+                ctx.clearRect(0, 0, w, h);
+            }
+		}
+	</script>
+</body>
+</html>
